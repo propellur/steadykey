@@ -24,6 +24,9 @@ coverage
 build
 build-*
 dist
+*.tgz
+.npm-packages.tgz
+.npm-packages-cache
 .tmp
 .temp
 .cache
