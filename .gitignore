@@ -1,0 +1,133 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.*
+
+# Coverage directories
+coverage
+*.lcov
+
+# Build outputs
+build
+build-*
+dist
+.tmp
+.temp
+.cache
+.esbuild
+.rollup.cache
+.tsup
+vite.config.ts.cache
+
+# Dependency directories
+node_modules
+jspm_packages
+web_modules
+bower_components
+
+# Package manager stores
+.npm
+.yarn
+.pnp.*
+.pnpm-store
+
+# TypeScript
+*.tsbuildinfo
+
+# Transpiled sources
+*.d.ts
+*.map
+
+# Environment files
+.env
+.env.*
+.envrc
+*.env.local
+*.env.development
+*.env.production
+*.env.test
+
+# OS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+fseventsd
+
+# IDE directories
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.orig
+*.rej
+*.bak
+*.backup
+*.tmp
+*.temp
+*.~
+~$*
+
+# Editor state
+.history/
+.tmp-*
+*.swp
+*.swo
+.npmrc
+
+# Test artifacts
+.vitest
+.jest-cache
+.jest
+.nyc_output
+
+# Lock files from other managers
+*.lock.hjson
+
+# Misc caches
+.cache-loader
+.parcel-cache
+.next
+.nuxt
+.svelte-kit
+.storybook
+
+# Generated documentation
+site
+out
+
+# Local databases
+*.sqlite
+*.sqlite-journal
+
+# Shell history
+*.history
+
+# Mac trash
+.Trash-*

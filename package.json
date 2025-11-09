@@ -1,0 +1,49 @@
+{
+  "name": "steadykey",
+  "version": "0.1.0",
+  "description": "Deterministic idempotency key manager for JSON payloads with multi-backend storage.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "lint": "tsc --noEmit",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "idempotency",
+    "redis",
+    "typescript",
+    "deterministic",
+    "memcached",
+    "postgresql",
+    "mysql",
+    "mongodb",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "redis": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "redis": "^4.6.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.4.0",
+    "vitest": "^1.5.0"
+  }
+}
