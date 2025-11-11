@@ -155,6 +155,29 @@ describe("IdempotencyManager", () => {
     expect(second.record.metadata).toEqual({ attempt: 1 });
   });
 
+  it("handles string payloads", async () => {
+    const first = await manager.register("simple-payload", { metadata: "initial", ttlSeconds: 15 });
+    expect(first.stored).toBe(true);
+    expect(first.record.metadata).toBe("initial");
+    expect(first.record.ttlSeconds).toBe(15);
+
+    const second = await manager.register("simple-payload");
+    expect(second.stored).toBe(false);
+    expect(second.record.metadata).toBe("initial");
+
+    const lookup = await manager.lookupByPayload("simple-payload");
+    expect(lookup?.id).toBe(first.id);
+    expect((lookup?.ttlSeconds ?? 0)).toBeGreaterThan(0);
+
+    await manager.updateTtl(first.id, null);
+    const persistent = await manager.lookupById(first.id);
+    expect(persistent?.ttlSeconds).toBeNull();
+
+    const cleared = await manager.clear(first.id);
+    expect(cleared).toBe(true);
+    expect(await manager.lookupById(first.id)).toBeNull();
+  });
+
   it("allows overriding TTL per call", async () => {
     const payload = createPayload();
 

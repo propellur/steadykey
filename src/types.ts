@@ -1,5 +1,11 @@
 export type HashAlgorithm = "sha256" | "sha512";
 
+export type JsonPrimitive = string | number | boolean | null;
+
+export type JsonValue = JsonPrimitive | { [key: string]: JsonValue } | JsonValue[];
+
+export type IdempotencyMetadata = JsonValue;
+
 export interface IdempotencyManagerOptions {
   readonly keyPrefix?: string;
   readonly defaultTtlSeconds?: number | null;
@@ -9,7 +15,7 @@ export interface IdempotencyManagerOptions {
 
 export interface IdempotencyRegisterOptions {
   readonly ttlSeconds?: number | null;
-  readonly metadata?: Record<string, unknown>;
+  readonly metadata?: IdempotencyMetadata;
   readonly storeCanonicalPayload?: boolean;
 }
 
@@ -17,7 +23,7 @@ export interface IdempotencyRecord {
   readonly id: string;
   readonly payloadHash: string;
   readonly createdAt: string;
-  readonly metadata?: Record<string, unknown>;
+  readonly metadata?: IdempotencyMetadata;
   readonly canonicalPayload?: string;
   readonly ttlSeconds?: number | null;
 }
@@ -87,4 +93,38 @@ export interface SqliteDatabaseLike {
     sql: string,
     params?: readonly unknown[] | Record<string, unknown>,
   ): T | undefined | Promise<T | undefined>;
+}
+
+export interface DynamoDbClientLike {
+  put(params: {
+    TableName: string;
+    Item: Record<string, unknown>;
+    ConditionExpression?: string;
+    ExpressionAttributeNames?: Record<string, string>;
+    ExpressionAttributeValues?: Record<string, unknown>;
+  }): Promise<unknown>;
+  get(params: {
+    TableName: string;
+    Key: Record<string, unknown>;
+    ConsistentRead?: boolean;
+    ProjectionExpression?: string;
+    ExpressionAttributeNames?: Record<string, string>;
+  }): Promise<{ Item?: Record<string, unknown> | undefined } | undefined>;
+  update(params: {
+    TableName: string;
+    Key: Record<string, unknown>;
+    UpdateExpression: string;
+    ConditionExpression?: string;
+    ExpressionAttributeNames?: Record<string, string>;
+    ExpressionAttributeValues?: Record<string, unknown>;
+    ReturnValues?: string;
+  }): Promise<unknown>;
+  delete(params: {
+    TableName: string;
+    Key: Record<string, unknown>;
+    ConditionExpression?: string;
+    ExpressionAttributeNames?: Record<string, string>;
+    ExpressionAttributeValues?: Record<string, unknown>;
+    ReturnValues?: string;
+  }): Promise<{ Attributes?: Record<string, unknown> | undefined } | undefined>;
 }

@@ -63,6 +63,7 @@ npm install pg                # PostgresIdempotencyStore
 npm install mysql2            # MySqlIdempotencyStore
 npm install mongodb           # MongoIdempotencyStore
 npm install better-sqlite3    # SqliteIdempotencyStore
+npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb  # DynamoDbIdempotencyStore
 ```
 
 ## Quick Tour
@@ -131,7 +132,7 @@ if (result.stored) {
 ```
 
 - `options.ttlSeconds` overrides the manager default for this call.
-- `options.metadata` accepts any JSON-serializable object and is stored with the record.
+- `options.metadata` accepts any JSON-serializable value (objects, strings, numbers, etc.) and is stored with the record.
 - `options.storeCanonicalPayload` toggles payload storage per call.
 - Result shape: `{ id, key, stored, record }` where `record` reflects the stored data (including metadata and canonical payload when present).
 
@@ -253,6 +254,25 @@ const mysqlStore = new MySqlIdempotencyStore(connection, {
 ```ts
 const mongoStore = new MongoIdempotencyStore(collection, {
   ensureIndexes: true,
+});
+```
+
+### DynamoDbIdempotencyStore
+
+- Works with AWS SDK v3 `DynamoDBDocumentClient` or compatible clients exposing `put`, `get`, `update`, and `delete`.
+- Options: `{ tableName: string, partitionKey?: string, valueAttribute?: string, ttlAttribute?: string, consistentRead?: boolean }`.
+- Uses conditional writes for atomic inserts and stores TTL as epoch seconds when provided.
+
+```ts
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDbIdempotencyStore } from "steadykey";
+
+const client = new DynamoDBClient({});
+const documentClient = DynamoDBDocumentClient.from(client);
+
+const dynamoStore = new DynamoDbIdempotencyStore(documentClient, {
+  tableName: "steadykey_entries",
 });
 ```
 

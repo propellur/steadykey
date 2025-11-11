@@ -13,11 +13,15 @@ export type {
   IdempotencyRegistrationResult,
   IdempotencyStore,
   IdempotencyStoreValue,
+  IdempotencyMetadata,
+  JsonPrimitive,
+  JsonValue,
   MemcachedClientLike,
   PgClientLike,
   MySqlClientLike,
   MongoCollectionLike,
   SqliteDatabaseLike,
+  DynamoDbClientLike,
 } from "./types.js";
 export { canonicalize, hashCanonicalValue } from "./utils.js";
 export { steadyKey } from "./steady-key.js";
@@ -28,3 +32,4 @@ export { MySqlIdempotencyStore } from "./stores/mysql-store.js";
 export { MongoIdempotencyStore } from "./stores/mongo-store.js";
 export { InMemoryIdempotencyStore } from "./stores/in-memory-store.js";
 export { SqliteIdempotencyStore } from "./stores/sqlite-store.js";
+export { DynamoDbIdempotencyStore } from "./stores/dynamodb-store.js";
