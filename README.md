@@ -46,6 +46,12 @@ To run steadykey smoothly, ensure your system meets these requirements:
   
 - **Storage**: Minimum of 100 MB of free disk space for installation and operation.
 
+## ⚙️ Configuration & Design
+
+Steadykey is designed with specific defaults to ensure consistency and reliability.
+
+- **Collision Handling**: If a different payload generates the same hash (a rare collision), the system throws an `IdempotencyCollisionError`. This ensures data integrity is never compromised.
+
 ## 🛠 Usage Instructions
 
 After installation, you can start using steadykey. Here are some basic instructions:
